@@ -95,6 +95,7 @@ namespace lab0
             //{
 
             //}
+            Console.ReadKey(true);
         }
     }
 }
