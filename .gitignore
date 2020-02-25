@@ -3,3 +3,9 @@
 ################################################################################
 
 /.vs
+/TranslatorClient/obj
+/TranslatorClient/bin/Debug
+/TranslationServer/obj
+/TranslationServer/bin/Debug
+/TranslationInterface/obj/Debug
+/TranslationInterface/bin/Debug
