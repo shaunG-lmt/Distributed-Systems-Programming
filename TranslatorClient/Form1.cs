@@ -10,22 +10,19 @@ using System.Windows.Forms;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
-using TranslationServer;
-
+using TranslationInterface;
 namespace TranslatorClient
 {
     public partial class Form1 : Form
     {
-        Translator translatorObject = null;
+        ITranslation translatorObject = null;
         public Form1()
         {
             InitializeComponent();
             TcpChannel channel = new TcpChannel();
             ChannelServices.RegisterChannel(channel, false);
 
-            translatorObject = (Translator)Activator.GetObject(typeof(Translator), "tcp://localhost:5000/Translate");
-
-
+            translatorObject = (ITranslation)Activator.GetObject(typeof(ITranslation), "tcp://localhost:5000/Translate");
         }
 
         private void translateBtn_Click(object sender, EventArgs e)

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TranslationInterface;
 
 namespace TranslationServer
 {
-    public class Translator : MarshalByRefObject
+    public class Translator : MarshalByRefObject, ITranslation
     {
-        public string Translate(string EnglishString) {
+        string ITranslation.Translate(string EnglishString) {
             string[] words = EnglishString.Split(' ');
             string result = "";
 
@@ -18,6 +19,14 @@ namespace TranslationServer
                 result += word.Substring(0, 1) + "ay ";
             }
             return result;
+        }
+        string ITranslation.GetName()
+        {
+            return "Shaun Gill";
+        }
+        string ITranslation.GetStudentID()
+        {
+            return "201710478";
         }
     }
 }

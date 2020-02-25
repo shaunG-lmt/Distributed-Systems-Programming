@@ -84,9 +84,9 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TranslationServer\TranslationServer.csproj">
-      <Project>{6652b5fc-5937-41c6-97d8-d8de1a50cfd1}</Project>
-      <Name>TranslationServer</Name>
+    <ProjectReference Include="..\TranslationInterface\TranslationInterface.csproj">
+      <Project>{80808bdd-ebb7-40ec-abab-a3de05429de6}</Project>
+      <Name>TranslationInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
