@@ -26,7 +26,7 @@ namespace SignalRClient
         {
             InitializeComponent();
 
-            connection = new HubConnectionBuilder().WithUrl("http://localhost:52317/ChatHub").Build();
+            connection = new HubConnectionBuilder().WithUrl("http://150.237.93.13:5000/ChatHub").Build();
             connection.On<string, string>("GetMessage", new Action<string, string>((username, message) => GetMessage(username, message)));
         }
 
