@@ -3,3 +3,11 @@
 ################################################################################
 
 /SignalRLabs/.vs/SignalRLabs/v15
+/SignalRLabs/SignalRLabs/obj/Debug/netcoreapp2.2
+/SignalRLabs/SignalRLabs/obj
+/SignalRLabs/.vs/SignalRLabs/DesignTimeBuild
+/SignalRLabs/packages
+/SignalRLabs/.vs/config
+/SignalRLabs/SignalRClient/bin/Debug
+/SignalRLabs/SignalRClient/obj/Debug
+/SignalRLabs/SignalRLabs/bin/Debug/netcoreapp2.2
