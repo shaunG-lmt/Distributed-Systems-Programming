@@ -24,7 +24,7 @@ namespace EntityFrameworkLab
                     First_Name = "Jeff",
                     Middle_Name = "Is",
                     Last_Name = "Name",
-                    Date_of_Birth = new DateTime(1960, 21, 12),
+                    Date_of_Birth = new DateTime(1960, 12, 21),
                     Address = addr
                 };
                 ctx.Addresses.Add(addr);
