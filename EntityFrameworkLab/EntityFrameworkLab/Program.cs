@@ -15,6 +15,7 @@ namespace EntityFrameworkLab
                     Street = "Jeff Street",
                     City = "England",
                     Postcode = "JE21FF",
+                    Country = "England",
 
                     People = new List<Person>()
                 };
@@ -22,7 +23,7 @@ namespace EntityFrameworkLab
                 Person prsn = new Person()
                 {
                     First_Name = "Jeff",
-                    Middle_Name = "Is",
+                    Middle_Names = "Is",
                     Last_Name = "Name",
                     Date_of_Birth = new DateTime(1960, 12, 21),
                     Address = addr
