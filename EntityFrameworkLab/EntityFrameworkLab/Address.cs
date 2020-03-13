@@ -18,6 +18,7 @@ namespace EntityFrameworkLab
         public string Postcode { get; set; }
         public string Country { get; set; }
         public ICollection<Person> People { get; set; }
+
         public Address() { }
     }
 }
