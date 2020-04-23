@@ -20,21 +20,49 @@ namespace DistSysACW.Controllers
 
 
         [ActionName("Hello")]
-        public string Get()
+        public ActionResult Get()
         {
             #region TASK1
             // TODO: add api/talkback/hello response
             #endregion
+
+            return Ok("Hello World");
         }
 
         [ActionName("Sort")]
-        public IActionResult Get([FromQuery]int[] integers)
+        public IActionResult Get([FromQuery]string[] integers)
         {
             #region TASK1
             // TODO: 
             // sort the integers into ascending order
             // send the integers back as the api/talkback/sort response
             #endregion
+            
+            try
+            {
+                int[] validchars = new int[integers.Length];
+                // Validate chars
+                for (int i = 0; i < integers.Length; i++)
+                {
+                    int x = Int32.Parse(integers[i]);
+                    validchars[i] = x;
+                }
+                
+                // Sort valid
+                Array.Sort(validchars);
+                return Ok(validchars);
+            }
+            // Invalid chars
+            catch (FormatException)
+            {
+                return BadRequest("Bad Request");
+            }
+            // Empty
+            catch (ArgumentNullException)
+            {
+                return Ok("[]");
+            }
+
         }
     }
 }
