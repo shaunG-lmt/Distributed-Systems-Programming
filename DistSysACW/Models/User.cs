@@ -27,6 +27,7 @@ namespace DistSysACW.Models
 
     public static class UserDatabaseAccess
     {
+        // 3 - 1
         public static int newUser(string username) 
         {
             using (var dba = new UserContext())
@@ -43,8 +44,19 @@ namespace DistSysACW.Models
                 return guid = user.ApiKey;
             }
         }
-        
-
+        // 3 - 2
+        public static bool checkUserApiKey(int apikey) 
+        {
+            using (var dba = new UserContext())
+            {
+                if(dba.Find(apikey)) 
+                {
+                    return true;
+                }
+                // Not found
+                return false;
+            }
+        }
         #region Task3 
         // TODO: Make methods which allow us to read from/write to the database 
         #endregion
