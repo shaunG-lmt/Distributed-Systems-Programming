@@ -57,6 +57,24 @@ namespace DistSysACW.Models
                 return false;
             }
         }
+        // 3 - 3
+        public static bool checkApiKeyandUsername(int apikey, string username) 
+        {
+            using (var dba = new UserContext())
+            {
+                User foundUser = dba.Find(apikey);
+                if (foundUser == null) 
+                {
+                    return false;
+                }
+                else if(foundUser.UserName == username)
+                {
+                    return true;
+                }
+                // Apikey found but not username
+                return false;
+            }
+        }
         #region Task3 
         // TODO: Make methods which allow us to read from/write to the database 
         #endregion
