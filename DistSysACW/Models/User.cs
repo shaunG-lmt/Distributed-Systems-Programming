@@ -28,6 +28,9 @@ namespace DistSysACW.Models
     public static class UserDatabaseAccess
     {
         // 3 - 1
+        //1. Create a new user, using a username given as a parameter and creating a new GUID which is saved as a
+        //string to the database as the ApiKey. This must return the ApiKey or the User object so that the server can
+        //pass the Key back to the client.
         public static int newUser(string username) 
         {
             using (var dba = new UserContext())
@@ -45,6 +48,7 @@ namespace DistSysACW.Models
             }
         }
         // 3 - 2
+        //2. Check if a user with a given ApiKey string exists in the database, returning true or false.
         public static bool checkUserApiKey(string apikey) 
         {
             using (var dba = new UserContext())
@@ -58,6 +62,7 @@ namespace DistSysACW.Models
             }
         }
         // 3 - 3
+        //3. Check if a user with a given ApiKey and UserName exists in the database, returning true or false.
         public static bool checkApiKeyandUsername(string apikey, string username) 
         {
             using (var dba = new UserContext())
@@ -75,6 +80,11 @@ namespace DistSysACW.Models
                 return false;
             }
         }
+        // 3 - 4
+        //4. Check if a user with a given ApiKey string exists in the database, returning the User object.
+        //3-5
+        //5. Delete a user with a given ApiKey from the database.
+
         #region Task3 
         // TODO: Make methods which allow us to read from/write to the database 
         #endregion
