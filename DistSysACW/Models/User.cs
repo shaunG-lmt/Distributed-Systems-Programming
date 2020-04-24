@@ -27,6 +27,9 @@ namespace DistSysACW.Models
 
     public static class UserDatabaseAccess
     {
+        #region Task3 
+        // TODO: Make methods which allow us to read from/write to the database 
+        #endregion
         // 3 - 1
         //1. Create a new user, using a username given as a parameter and creating a new GUID which is saved as a
         //string to the database as the ApiKey. This must return the ApiKey or the User object so that the server can
@@ -35,7 +38,7 @@ namespace DistSysACW.Models
         {
             using (var dba = new UserContext())
             {
-                int guid;
+                string guid;
                 User user = new User() 
                 {
                     UserName = username,
@@ -43,7 +46,7 @@ namespace DistSysACW.Models
                 };
                 dba.Add(user);
                 dba.SaveChanges();
-
+                //Guid.newguid().tostring()
                 return guid = user.ApiKey;
             }
         }
@@ -82,12 +85,25 @@ namespace DistSysACW.Models
         }
         // 3 - 4
         //4. Check if a user with a given ApiKey string exists in the database, returning the User object.
+        public static string checkApiKeyReturnUsername(string apikey)
+        {
+            using (var dba = new UserContext())
+            {
+                User foundUser = dba.Find(apikey);
+                return foundUser.UserName;
+            }
+            }
         //3-5
         //5. Delete a user with a given ApiKey from the database.
-
-        #region Task3 
-        // TODO: Make methods which allow us to read from/write to the database 
-        #endregion
+        public static bool removeUser(string apikey)
+        {
+            using (var dba = new UserContext())
+            {
+                User foundUser = dba.Find(apikey);
+                dba.Remove(foundUser);
+                dba.SaveChanges();
+            }
+        }
     }
 
 
