@@ -45,7 +45,7 @@ namespace DistSysACW.Models
             }
         }
         // 3 - 2
-        public static bool checkUserApiKey(int apikey) 
+        public static bool checkUserApiKey(string apikey) 
         {
             using (var dba = new UserContext())
             {
@@ -58,7 +58,7 @@ namespace DistSysACW.Models
             }
         }
         // 3 - 3
-        public static bool checkApiKeyandUsername(int apikey, string username) 
+        public static bool checkApiKeyandUsername(string apikey, string username) 
         {
             using (var dba = new UserContext())
             {
