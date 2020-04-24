@@ -27,6 +27,24 @@ namespace DistSysACW.Models
 
     public static class UserDatabaseAccess
     {
+        public static int newUser(string username) 
+        {
+            using (var dba = new UserContext())
+            {
+                int guid;
+                User user = new User() 
+                {
+                    UserName = username,
+                    Role = "user"
+                };
+                dba.Add(user);
+                dba.SaveChanges();
+
+                return guid = user.ApiKey;
+            }
+        }
+        
+
         #region Task3 
         // TODO: Make methods which allow us to read from/write to the database 
         #endregion
