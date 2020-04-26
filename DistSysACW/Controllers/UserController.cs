@@ -17,6 +17,7 @@ namespace DistSysACW.Controllers
         public UserController(Models.UserContext context) : base(context) { }
 
         [ActionName("New")]
+        [HttpGet]
         public IActionResult Get([FromQuery]string username)
         {
             // Blank input
@@ -25,7 +26,7 @@ namespace DistSysACW.Controllers
                 return Ok("\"False - User Does Not Exist! Did you mean to do a POST to create a new user?\"");
             }
             // User found
-            else if (UserDatabaseAccess.checkUserApiKey(username))
+            else if (UserDatabaseAccess.checkUsername(username))
             {
                 return Ok("\"True - User Does Exist! Did you mean to do a POST to create a new user?\"");
             }
@@ -36,20 +37,28 @@ namespace DistSysACW.Controllers
             }
         }
 
+        [ActionName("New")]
+        [HttpPost]
         public IActionResult Post([FromBody] string username)
         {
             // Blank input
             if (username == null)
             {
-                return Ok("\"Oops. Make sure your body contains a string with your username and your Content - Type is Content - Type:application / json\"");
+                return BadRequest("Oops. Make sure your body contains a string with your username and your Content-Type is Content-Type:application/json");
             }
             // User already exists
-            else if (UserDatabaseAccess.checkUserApiKey(username))
+            else if (UserDatabaseAccess.checkUsername(username))
             {
-                return Ok("\"Oops. This username is already in use. Please try again with a new username.\"");
+
+                return StatusCode(403, "Oops. This username is already in use. Please try again with a new username.");
+                //return Forbid();
+                //
             }
             // Add the new user
-            return Ok(UserDatabaseAccess.newUser(username));
+            else
+            {
+                return Ok(UserDatabaseAccess.newUser(username));
+            }    
         }
     }
 }

@@ -39,8 +39,7 @@ namespace DistSysACW.Models
             using (var dba = new UserContext())
             {
                 string role;
-                
-                if(dba.Users.First() != null)
+                if(dba.Users.Any()) // fix
                 {
                     role = "user";
                 }
@@ -74,6 +73,22 @@ namespace DistSysACW.Models
                     return false;
                 }
                 // User found
+                return true;
+            }
+        }
+        // 3 - ?
+        // Username check
+        public static bool checkUsername(string username)
+        {
+            using (var dba = new UserContext())
+            {
+                User requestedUsername = dba.Users.SingleOrDefault(User => User.UserName == username);
+                if (requestedUsername == null)
+                {
+                    // User does not exist
+                    return false;
+                }
+                // User exists
                 return true;
             }
         }
