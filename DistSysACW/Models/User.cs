@@ -39,12 +39,15 @@ namespace DistSysACW.Models
             using (var dba = new UserContext())
             {
                 string role;
-                if(dba.Users.Any()) // fix
+                try
                 {
+                    dba.Users.First();
                     role = "user";
                 }
-                // Table is empty => first user must be admin
-                role = "admin";
+                catch (InvalidOperationException)
+                {
+                    role = "admin";
+                }
 
                 User user = new User() 
                 {
@@ -113,14 +116,14 @@ namespace DistSysACW.Models
         //}
         //// 3 - 4
         ////4. Check if a user with a given ApiKey string exists in the database, returning the User object.
-        //public static string checkApiKeyReturnUsername(string apikey)
-        //{
-        //    using (var dba = new UserContext())
-        //    {
-        //        User foundUser = dba.Find(apikey);
-        //        return foundUser.UserName;
-        //    }
-        //    }
+        public static string checkApiKeyReturnUser(string apikey)
+        {
+            using (var dba = new UserContext())
+            {
+                User foundUser = dba.Users.Find(apikey);
+                return foundUser.UserName;
+            }
+        }
         ////3-5
         ////5. Delete a user with a given ApiKey from the database.
         //public static bool removeUser(string apikey)
