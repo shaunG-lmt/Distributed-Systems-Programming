@@ -24,10 +24,11 @@ namespace DistSysACW.Filters
                     {
                         if (context.HttpContext.User.IsInRole(role))
                         {
-                            return;
+                            break;
                         }
                         else
                         {
+
                             context.HttpContext.Response.StatusCode = 401;
                             context.Result = new JsonResult("Unauthorized. Admin access only.");
                         }

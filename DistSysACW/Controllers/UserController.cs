@@ -38,7 +38,6 @@ namespace DistSysACW.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
         [ActionName("New")]
         [HttpPost]
         public IActionResult Post([FromBody] string username)

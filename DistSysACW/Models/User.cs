@@ -42,11 +42,11 @@ namespace DistSysACW.Models
                 try
                 {
                     dba.Users.First();
-                    role = "user";
+                    role = "User";
                 }
                 catch (InvalidOperationException)
                 {
-                    role = "admin";
+                    role = "Admin";
                 }
 
                 User user = new User() 
