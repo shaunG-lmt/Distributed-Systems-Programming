@@ -26,8 +26,12 @@ namespace DistSysACW.Filters
                         {
                             return;
                         }
+                        else
+                        {
+                            context.HttpContext.Response.StatusCode = 401;
+                            context.Result = new JsonResult("Unauthorized. Admin access only.");
+                        }
                     }
-                    throw new UnauthorizedAccessException();
                 }
             }
             catch

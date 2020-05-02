@@ -79,6 +79,17 @@ namespace DistSysACW.Models
                 return true;
             }
         }
+        
+        //4. Check if a user with a given ApiKey string exists in the database, returning the User object.
+        public static User checkApiKeyReturnUser(string apikey)
+        {
+            using (var dba = new UserContext())
+            {
+                User foundUser = dba.Users.Find(apikey);
+                return foundUser;
+            }
+        }
+
         // 3 - ?
         // Username check
         public static bool checkUsername(string username)
@@ -114,16 +125,6 @@ namespace DistSysACW.Models
         //        return false;
         //    }
         //}
-        //// 3 - 4
-        ////4. Check if a user with a given ApiKey string exists in the database, returning the User object.
-        public static string checkApiKeyReturnUser(string apikey)
-        {
-            using (var dba = new UserContext())
-            {
-                User foundUser = dba.Users.Find(apikey);
-                return foundUser.UserName;
-            }
-        }
         ////3-5
         ////5. Delete a user with a given ApiKey from the database.
         //public static bool removeUser(string apikey)

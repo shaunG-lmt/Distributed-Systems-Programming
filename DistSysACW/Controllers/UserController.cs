@@ -16,6 +16,7 @@ namespace DistSysACW.Controllers
         /// <param name="context">DbContext set as a service in Startup.cs and dependency injected</param>
         public UserController(Models.UserContext context) : base(context) { }
 
+        [Authorize(Roles ="Admin,User")]
         [ActionName("New")]
         [HttpGet]
         public IActionResult Get([FromQuery]string username)
@@ -37,6 +38,7 @@ namespace DistSysACW.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [ActionName("New")]
         [HttpPost]
         public IActionResult Post([FromBody] string username)
