@@ -16,7 +16,6 @@ namespace DistSysACW.Controllers
         /// <param name="context">DbContext set as a service in Startup.cs and dependency injected</param>
         public UserController(Models.UserContext context) : base(context) { }
 
-        [Authorize(Roles ="Admin,User")]
         [ActionName("New")]
         [HttpGet]
         public IActionResult Get([FromQuery]string username)
@@ -61,5 +60,25 @@ namespace DistSysACW.Controllers
                 return Ok(UserDatabaseAccess.newUser(username));
             }    
         }
+
+        [Authorize(Roles = "Admin, User")]
+        [ActionName("Removeuser")]
+        public IActionResult Delete([FromQuery] string username)
+        {
+            // Tried to do this through using identity set up in authmiddleware.cs, couldnt access claims and there was an empty identity in there as well.
+            string apikey = this.Request.Headers["ApiKey"];
+            if (UserDatabaseAccess.checkUserApiKey(apikey))
+            {
+                User user = UserDatabaseAccess.returnUserFromApiKey(apikey);
+                if(user.UserName == username)
+                {
+                    UserDatabaseAccess.removeUser(user);
+                    return Ok(true);
+                }
+            }
+            return Ok(false);
+        }
+
+
     }
 }

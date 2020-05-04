@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DistSysACW.Models;
 
 namespace DistSysACW.Filters
 {
@@ -13,32 +14,40 @@ namespace DistSysACW.Filters
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            try
-            {
-                AuthorizeAttribute authAttribute = (AuthorizeAttribute)context.ActionDescriptor.EndpointMetadata.Where(e => e.GetType() == typeof(AuthorizeAttribute)).FirstOrDefault();
+            AuthorizeAttribute authAttribute = (AuthorizeAttribute)context.ActionDescriptor.EndpointMetadata.Where(e => e.GetType() == typeof(AuthorizeAttribute)).FirstOrDefault();
 
-                if (authAttribute != null)
+            if (authAttribute != null)
+            {
+                if (UserDatabaseAccess.checkUserApiKey(context.HttpContext.Request.Headers["ApiKey"]))
                 {
                     string[] roles = authAttribute.Roles.Split(',');
-                    foreach (string role in roles)
+                    if (context.HttpContext.User.IsInRole(roles[0]))
                     {
-                        if (context.HttpContext.User.IsInRole(role))
+                        // User has role "Admin"
+                        return;
+                    }
+                    try
+                    {
+                        if (context.HttpContext.User.IsInRole(roles[1]))
                         {
-                            break;
-                        }
-                        else
-                        {
-
-                            context.HttpContext.Response.StatusCode = 401;
-                            context.Result = new JsonResult("Unauthorized. Admin access only.");
+                            // User has role "User"
+                            return;
                         }
                     }
+                    catch
+                    {
+                        context.HttpContext.Response.StatusCode = 401;
+                        context.Result = new JsonResult("Unauthorized. Admin access only.");
+                    }
                 }
-            }
-            catch
-            {
-                context.HttpContext.Response.StatusCode = 401;
-                context.Result = new JsonResult("Unauthorized. Check ApiKey in Header is correct.");
+                else
+                {
+                    context.HttpContext.Response.StatusCode = 401;
+                    context.Result = new JsonResult("Unauthorized. Check ApiKey in Header is correct.");
+
+                }
+                    
+
             }
         }
     }
