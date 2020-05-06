@@ -24,11 +24,11 @@ namespace DistSysACW.Middleware
             #endregion
 
             var header = context.Request.Headers;
-            if (header.ContainsKey("ApiKey") && UserDatabaseAccess.checkUserApiKey(header["ApiKey"]) == true)
+            if (header.ContainsKey("ApiKey") && UserDatabaseAccess.CheckUserApiKey(header["ApiKey"]) == true)
             {
                 string apikey = header["ApiKey"];
 
-                User founduser = UserDatabaseAccess.returnUserFromApiKey(apikey);
+                User founduser = UserDatabaseAccess.ReturnUserFromApiKey(apikey);
                 
                 var identity = new ClaimsIdentity(new[]
                 {
