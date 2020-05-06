@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DistSysACW.Models;
+using Newtonsoft.Json;
 
 namespace DistSysACW.Controllers
 {
@@ -26,7 +27,7 @@ namespace DistSysACW.Controllers
                 return Ok("\"False - User Does Not Exist! Did you mean to do a POST to create a new user?\"");
             }
             // User found
-            else if (UserDatabaseAccess.checkUsername(username))
+            else if (UserDatabaseAccess.CheckUsername(username))
             {
                 return Ok("\"True - User Does Exist! Did you mean to do a POST to create a new user?\"");
             }
@@ -47,7 +48,7 @@ namespace DistSysACW.Controllers
                 return BadRequest("Oops. Make sure your body contains a string with your username and your Content-Type is Content-Type:application/json");
             }
             // User already exists
-            else if (UserDatabaseAccess.checkUsername(username))
+            else if (UserDatabaseAccess.CheckUsername(username))
             {
 
                 return StatusCode(403, "Oops. This username is already in use. Please try again with a new username.");
@@ -57,28 +58,43 @@ namespace DistSysACW.Controllers
             // Add the new user
             else
             {
-                return Ok(UserDatabaseAccess.newUser(username));
+                return Ok(UserDatabaseAccess.NewUser(username));
             }    
         }
 
         [Authorize(Roles = "Admin, User")]
         [ActionName("Removeuser")]
+        [HttpDelete]
         public IActionResult Delete([FromQuery] string username)
         {
             // Tried to do this through using identity set up in authmiddleware.cs, couldnt access claims and there was an empty identity in there as well.
             string apikey = this.Request.Headers["ApiKey"];
-            if (UserDatabaseAccess.checkUserApiKey(apikey))
+            if (UserDatabaseAccess.CheckUserApiKey(apikey))
             {
-                User user = UserDatabaseAccess.returnUserFromApiKey(apikey);
+                User user = UserDatabaseAccess.ReturnUserFromApiKey(apikey);
                 if(user.UserName == username)
                 {
-                    UserDatabaseAccess.removeUser(user);
+                    UserDatabaseAccess.RemoveUser(user);
                     return Ok(true);
                 }
             }
             return Ok(false);
         }
 
-
+        [Authorize(Roles = "Admin")]
+        [ActionName("Changerole")]
+        [HttpPost]
+        public IActionResult PostChangeRole([FromBody] JSONContract JSONBodyResult)
+        {
+            string result = UserDatabaseAccess.ChangeRole(JSONBodyResult);
+            if (result.StartsWith("NOT"))
+            {
+                return BadRequest(result);
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
     }
 }

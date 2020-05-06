@@ -18,36 +18,36 @@ namespace DistSysACW.Filters
 
             if (authAttribute != null)
             {
-                if (UserDatabaseAccess.checkUserApiKey(context.HttpContext.Request.Headers["ApiKey"]))
+                // Invalid Apikey
+                if (UserDatabaseAccess.CheckUserApiKey(context.HttpContext.Request.Headers["ApiKey"]) == false)
                 {
-                    string[] roles = authAttribute.Roles.Split(',');
-                    if (context.HttpContext.User.IsInRole(roles[0]))
-                    {
-                        // User has role "Admin"
-                        return;
-                    }
-                    try
-                    {
-                        if (context.HttpContext.User.IsInRole(roles[1]))
-                        {
-                            // User has role "User"
-                            return;
-                        }
-                    }
-                    catch
+                    // Invalid Apikey for request with admin role.
+                    if (authAttribute.Roles == "Admin")
                     {
                         context.HttpContext.Response.StatusCode = 401;
                         context.Result = new JsonResult("Unauthorized. Admin access only.");
+                        return;
                     }
+                    context.Result = new JsonResult("Unauthorized. Check ApiKey in Header is correct.");
+                    context.HttpContext.Response.StatusCode = 401;
+                    return;
                 }
                 else
                 {
+                    string[] roles = authAttribute.Roles.Split(',');
+                    foreach(string role in roles)
+                    {
+                        string jeff = role.Trim();
+                        if (context.HttpContext.User.IsInRole(jeff)) 
+                        {
+                            return;
+                        }
+                    }
+                    // User does not have admin role.
                     context.HttpContext.Response.StatusCode = 401;
-                    context.Result = new JsonResult("Unauthorized. Check ApiKey in Header is correct.");
+                    context.Result = new JsonResult("Unauthorized. Admin access only.");
 
                 }
-                    
-
             }
         }
     }

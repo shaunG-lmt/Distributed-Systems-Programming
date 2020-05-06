@@ -34,7 +34,7 @@ namespace DistSysACW.Models
         //1. Create a new user, using a username given as a parameter and creating a new GUID which is saved as a
         //string to the database as the ApiKey. This must return the ApiKey or the User object so that the server can
         //pass the Key back to the client.
-        public static string newUser(string username) 
+        public static string NewUser(string username) 
         {
             using (var dba = new UserContext())
             {
@@ -65,7 +65,7 @@ namespace DistSysACW.Models
         }
         // 3 - 2
         //2. Check if a user with a given ApiKey string exists in the database, returning true or false.
-        public static bool checkUserApiKey(string apikey) 
+        public static bool CheckUserApiKey(string apikey) 
         {
             using (var dba = new UserContext())
             {
@@ -81,7 +81,7 @@ namespace DistSysACW.Models
         }
         
         //4. Check if a user with a given ApiKey string exists in the database, returning the User object.
-        public static User returnUserFromApiKey(string apikey)
+        public static User ReturnUserFromApiKey(string apikey)
         {
             using (var dba = new UserContext())
             {
@@ -92,7 +92,7 @@ namespace DistSysACW.Models
 
         // 3 - ?
         // Username check
-        public static bool checkUsername(string username)
+        public static bool CheckUsername(string username)
         {
             using (var dba = new UserContext())
             {
@@ -127,13 +127,42 @@ namespace DistSysACW.Models
         //}
         ////3-5
         ////5. Delete a user with a given ApiKey from the database.
-        public static bool removeUser(User user)
+        public static bool RemoveUser(User user)
         {
             using (var dba = new UserContext())
             {
                 dba.Remove(user);
                 dba.SaveChanges();
                 return true;
+            }
+        }
+        public static string ChangeRole(JSONContract jSONContract)
+        {
+            using (var dba = new UserContext())
+            {
+                User requestedUser = dba.Users.SingleOrDefault(User => User.UserName == jSONContract.Username);
+                if (requestedUser == null)
+                {
+                    return "NOT DONE: Username does not exist";
+                }
+                // user exists
+                if (jSONContract.Role != "User" && jSONContract.Role != "Admin")
+                {
+                    return "NOT DONE: Role does not exist";
+                }
+                else
+                {
+                    try
+                    {
+                        requestedUser.Role = jSONContract.Role;
+                        dba.SaveChanges();
+                        return "DONE";
+                    }
+                    catch
+                    {
+                        return "NOT DONE: An error occured";
+                    }
+                }
             }
         }
     }
