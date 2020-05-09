@@ -22,22 +22,34 @@ namespace DistSysACW.Controllers
             return Ok("Hello "+ foundUser.UserName);
         }
 
-        //[Authorize(Roles = "Admin, User")]
-        //[ActionName("SHA1")]
-        //[HttpGet]
-        //public ActionResult Sha1()
-        //{
-        //    string output = "a";
-        //    return Ok(output);
-        //}
+        [Authorize(Roles = "Admin, User")]
+        [ActionName("Sha1")]
+        [HttpGet]
+        public ActionResult Sha1([FromQuery] string message)
+        {
+            if (message == null)
+            {
+                return BadRequest("Bad Request");
+            }
+            else
+            {
+                return Ok(Hashing.SHA1(message));
+            }
+        }
 
-        //[Authorize(Roles = "Admin, User")]
-        //[ActionName("SHA256")]
-        //[HttpGet]
-        //public ActionResult Sha256()
-        //{
-        //    string output = "a";
-        //    return Ok(output);
-        //}
+        [Authorize(Roles = "Admin, User")]
+        [ActionName("Sha256")]
+        [HttpGet]
+        public ActionResult Sha256([FromQuery] string message)
+        {
+            if (message == null)
+            {
+                return BadRequest("Bad Request");
+            }
+            else
+            {
+                return Ok(Hashing.SHA256(message));
+            }
+        }
     }
 }
