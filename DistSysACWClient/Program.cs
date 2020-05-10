@@ -35,6 +35,8 @@ namespace DistSysACWClient
             {
                 Console.WriteLine("What would you like to do next?");
                 userInput = Console.ReadLine().Split(" ");
+                Console.Clear();
+                Console.WriteLine("...please wait...");
                 HandleRequest(userInput);
             }
         }
@@ -110,14 +112,63 @@ namespace DistSysACWClient
                     switch (request[1])
                     {
                         case "Get":
-                            RunAsync("user/new?username=" + request[2], null, null, "get").Wait();
-                            break;
-
+                            {
+                                RunAsync("user/new?username=" + request[2], null, null, "get").Wait();
+                                break;
+                            }
                         case "Post":
-                            RunAsync("user/new", request[2], null, "post").Wait();
-                            break;
-
+                            {
+                                RunAsync("user/new", request[2], null, "post").Wait();
+                                break;
+                            }
                         case "Set":
+                            // User display and control for saving user details locally.
+                            {
+                                Console.WriteLine("To save user details a directory must be specified.");
+                                string directory;
+                                while (true)
+                                {
+                                    Console.WriteLine("Please enter the directory you wish to store user details at: ");
+                                    directory = Console.ReadLine();
+                                    Console.WriteLine("Are you sure \"" + directory + "\" is the correct. Please enter: [ y / n ] to confirm.");
+                                    string decision = Console.ReadLine();
+                                    if (decision == "y")
+                                    {
+                                        if (Directory.Exists(directory))
+                                        {
+                                            Console.WriteLine("User details will be stored at: " + directory + "/userdetails.txt");
+                                            // Getting user details from input.
+                                            try
+                                            {
+                                                directory += "/userdetails.txt";
+                                                string[] userDetails = { request[2], request[3] };
+                                                System.IO.File.WriteAllLines(directory, userDetails);
+                                                Console.WriteLine("Stored");
+                                                break;
+                                            }
+                                            catch
+                                            {
+                                                Console.WriteLine("Invalid format, please try again. Correct format: User Set username apikey");
+                                                Main();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Directory does not exist... Please try again...");
+                                        }
+                                    }
+                                    else if (decision == "n")
+                                    {
+                                        // Loop resumes. User re-prompted.
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Invalid choice...");
+                                        // Loop resumes. User re-prompted.
+                                    }
+
+                                }
+                            }
                             break;
 
                         case "Delete":
