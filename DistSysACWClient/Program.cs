@@ -37,8 +37,8 @@ namespace DistSysACWClient
             {
                 Console.WriteLine("What would you like to do next?");
                 userInput = Console.ReadLine().Split(" ");
-                Console.Clear();
                 Console.WriteLine("...please wait...");
+                Console.Clear();
                 HandleRequest(userInput);
             }
         }
