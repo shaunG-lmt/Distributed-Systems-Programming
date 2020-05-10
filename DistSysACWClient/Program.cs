@@ -49,29 +49,35 @@ namespace DistSysACWClient
                 switch (httpMethod)
                 {
                     // Get request with no apikey.
-                    case "get": 
-                        Task<string> taskGet = GetStringAsync(requestUri);
-                        if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
-                        { Console.WriteLine(taskGet.Result); }
-                        else
-                        { Console.WriteLine("Request Timed Out"); }
-                        break;
+                    case "get":
+                        {
+                            Task<string> taskGet = GetStringAsync(requestUri);
+                            if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
+                            { Console.WriteLine(taskGet.Result); }
+                            else
+                            { Console.WriteLine("Request Timed Out"); }
+                            break;
+                        }
 
                     // Post request with content in the body and no apikey.
-                    case "post": 
-                        Task<string> taskPost = PostStringAsync(requestUri, body);
-                        if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
-                        { Console.WriteLine(taskPost.Result); }
-                        else
-                        { Console.WriteLine("Request Timed Out"); }
-                        break;
+                    case "post":
+                        {
+                            Task<string> taskPost = PostStringAsync(requestUri, body);
+                            if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
+                            { Console.WriteLine(taskPost.Result); }
+                            else
+                            { Console.WriteLine("Request Timed Out"); }
+                            break;
+                        }
                     case "del":
-                        Task<string> taskDel = DeleteAsync(requestUri, apiKey);
-                        if (await Task.WhenAny(taskDel, Task.Delay(20000)) == taskDel)
-                        { Console.WriteLine(taskDel.Result); }
-                        else
-                        { Console.WriteLine("Request Timed Out"); }
-                        break;
+                        {
+                            Task<string> taskDel = DeleteAsync(requestUri, apiKey);
+                            if (await Task.WhenAny(taskDel, Task.Delay(20000)) == taskDel)
+                            { Console.WriteLine(taskDel.Result); }
+                            else
+                            { Console.WriteLine("Request Timed Out"); }
+                            break;
+                        }
                 }
             }
             catch (Exception e)
@@ -94,6 +100,28 @@ namespace DistSysACWClient
             HttpResponseMessage response = await client.PostAsync(path, stringContent);
             responsestring = await response.Content.ReadAsStringAsync();
             return responsestring;
+        }
+
+        static async Task<string> DeleteAsync(string path, string apiKey)
+        {
+            string responsestring = "";
+            client.DefaultRequestHeaders.Add("ApiKey", apiKey);
+            HttpResponseMessage response = await client.DeleteAsync(path);
+            responsestring = await response.Content.ReadAsStringAsync();
+
+            // Reset client creditials
+            client.DefaultRequestHeaders.Remove("Apikey");
+            clientUsername = null;
+            clientApiKey = null;
+
+            if (responsestring == "true")
+            {
+                return "True";
+            }
+            else
+            {
+                return "False";
+            }
         }
 
 
@@ -129,12 +157,31 @@ namespace DistSysACWClient
                             }
                         case "Set":
                             {
-                                clientUsername = request[2];
-                                clientApiKey = request[3];
-                                Console.WriteLine("Stored");
+                                try
+                                {
+                                    clientUsername = request[2];
+                                    clientApiKey = request[3];
+                                    Console.WriteLine("Stored");
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("Invalid format... Please try again.");
+                                    Main();
+                                }
                             }
                             break;
                         case "Delete":
+                            {
+                                if (clientUsername == null)
+                                {
+                                    Console.WriteLine("You need to do a User Post or User Set first");
+                                }
+                                else
+                                {
+                                    string requestUri = "user/removeuser?username=" + clientUsername;
+                                    RunAsync(requestUri, null, clientApiKey, "del").Wait();
+                                }
+                            }
                             break;
                         case "Role":
                             break;
