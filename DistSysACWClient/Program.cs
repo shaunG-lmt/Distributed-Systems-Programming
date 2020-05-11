@@ -123,6 +123,10 @@ namespace DistSysACWClient
             string responsestring = "";
             HttpResponseMessage response = await client.GetAsync(path);
             responsestring = await response.Content.ReadAsStringAsync();
+
+            // Reset client apiKey for future requests.
+            client.DefaultRequestHeaders.Remove("Apikey");
+
             return responsestring;
         }
         static async Task<string> PostStringAsync(string path, string body)
@@ -268,6 +272,19 @@ namespace DistSysACWClient
                                     else
                                     {
                                         string requestUri = "protected/hello";
+                                        RunAsync(requestUri, null, clientApiKey, "get").Wait();
+                                    }
+                                    break;
+                                }
+                            case "SHA1":
+                                {
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "protected/sha1?message=" + request[2];
                                         RunAsync(requestUri, null, clientApiKey, "get").Wait();
                                     }
                                     break;
