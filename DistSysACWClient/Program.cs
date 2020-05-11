@@ -51,12 +51,24 @@ namespace DistSysACWClient
                     // Get request with no apikey.
                     case "get":
                         {
-                            Task<string> taskGet = GetStringAsync(requestUri);
-                            if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
-                            { Console.WriteLine(taskGet.Result); }
+                            if (apiKey == null)
+                            {
+                                Task<string> taskGet = GetStringAsync(requestUri);
+                                if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
+                                { Console.WriteLine(taskGet.Result); }
+                                else
+                                { Console.WriteLine("Request Timed Out"); }
+                                break;
+                            }
                             else
-                            { Console.WriteLine("Request Timed Out"); }
-                            break;
+                            {
+                                Task<string> taskGet = GetStringAsync(requestUri, apiKey);
+                                if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
+                                { Console.WriteLine(taskGet.Result); }
+                                else
+                                { Console.WriteLine("Request Timed Out"); }
+                                break;
+                            }
                         }
                     // Post request with body and no apikey.
                     case "post":
@@ -98,6 +110,16 @@ namespace DistSysACWClient
         }
         static async Task<string> GetStringAsync(string path)
         {
+            string responsestring = "";
+            HttpResponseMessage response = await client.GetAsync(path);
+            responsestring = await response.Content.ReadAsStringAsync();
+            return responsestring;
+        }
+        static async Task<string> GetStringAsync(string path, string apikey)
+        {
+            // Set ApiKey
+            client.DefaultRequestHeaders.Add("Apikey", apikey);
+
             string responsestring = "";
             HttpResponseMessage response = await client.GetAsync(path);
             responsestring = await response.Content.ReadAsStringAsync();
@@ -174,63 +196,85 @@ namespace DistSysACWClient
                         }
                     }
                     break;
-
                 case "User":
-                    switch (request[1])
                     {
-                        case "Get":
-                            {
-                                RunAsync("user/new?username=" + request[2], null, null, "get").Wait();
+                        switch (request[1])
+                        {
+                            case "Get":
+                                {
+                                    RunAsync("user/new?username=" + request[2], null, null, "get").Wait();
+                                    break;
+                                }
+                            case "Post":
+                                {
+                                    RunAsync("user/new", request[2], null, "post").Wait();
+                                    break;
+                                }
+                            case "Set":
+                                {
+                                    try
+                                    {
+                                        clientUsername = request[2];
+                                        clientApiKey = request[3];
+                                        Console.WriteLine("Stored");
+                                    }
+                                    catch
+                                    {
+                                        Console.WriteLine("Invalid format... Please try again.");
+                                        Main();
+                                    }
+                                }
                                 break;
-                            }
-                        case "Post":
-                            {
-                                RunAsync("user/new", request[2], null, "post").Wait();
+                            case "Delete":
+                                {
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "user/removeuser?username=" + clientUsername;
+                                        RunAsync(requestUri, null, clientApiKey, "del").Wait();
+                                    }
+                                }
                                 break;
-                            }
-                        case "Set":
-                            {
-                                try
+                            case "Role":
                                 {
-                                    clientUsername = request[2];
-                                    clientApiKey = request[3];
-                                    Console.WriteLine("Stored");
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "user/changerole";
+                                        string body = request[2] + " " + request[3];
+                                        RunAsync(requestUri, body, clientApiKey, "post").Wait();
+                                    }
+                                    break;
                                 }
-                                catch
-                                {
-                                    Console.WriteLine("Invalid format... Please try again.");
-                                    Main();
-                                }
-                            }
-                            break;
-                        case "Delete":
-                            {
-                                if (clientUsername == null)
-                                {
-                                    Console.WriteLine("You need to do a User Post or User Set first");
-                                }
-                                else
-                                {
-                                    string requestUri = "user/removeuser?username=" + clientUsername;
-                                    RunAsync(requestUri, null, clientApiKey, "del").Wait();
-                                }
-                            }
-                            break;
-                        case "Role":
-                            if (clientUsername == null)
-                            {
-                                Console.WriteLine("You need to do a User Post or User Set first");
-                            }
-                            else
-                            {
-                                string requestUri = "user/changerole";
-                                string body = request[2] + " " + request[3];
-                                RunAsync(requestUri, body, clientApiKey, "post").Wait();
-                            }
-                            break;
+                        }
                     }
                     break;
-
+                case "Protected":
+                    {
+                        switch (request[1])
+                        {
+                            case "Hello":
+                                {
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "protected/hello";
+                                        RunAsync(requestUri, null, clientApiKey, "get").Wait();
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    }
                 case "Exit":
                     Environment.Exit(0);
                     break;
