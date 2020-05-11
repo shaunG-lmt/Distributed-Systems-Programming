@@ -289,6 +289,19 @@ namespace DistSysACWClient
                                     }
                                     break;
                                 }
+                            case "SHA256":
+                                {
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "protected/sha256?message=" + request[2];
+                                        RunAsync(requestUri, null, clientApiKey, "get").Wait();
+                                    }
+                                    break;
+                                }
                         }
                         break;
                     }
