@@ -37,8 +37,8 @@ namespace DistSysACWClient
             {
                 Console.WriteLine("What would you like to do next?");
                 userInput = Console.ReadLine().Split(" ");
-                Console.WriteLine("...please wait...");
                 Console.Clear();
+                Console.WriteLine("...please wait...");
                 HandleRequest(userInput);
             }
         }
@@ -58,16 +58,27 @@ namespace DistSysACWClient
                             { Console.WriteLine("Request Timed Out"); }
                             break;
                         }
-
-                    // Post request with content in the body and no apikey.
+                    // Post request with body and no apikey.
                     case "post":
                         {
-                            Task<string> taskPost = PostStringAsync(requestUri, body);
-                            if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
-                            { Console.WriteLine(taskPost.Result); }
+                            if (apiKey == null)
+                            {
+                                Task<string> taskPost = PostStringAsync(requestUri, body);
+                                if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
+                                { Console.WriteLine(taskPost.Result); }
+                                else
+                                { Console.WriteLine("Request Timed Out"); }
+                                break;
+                            }
                             else
-                            { Console.WriteLine("Request Timed Out"); }
-                            break;
+                            {
+                                Task<string> taskPost = PostStringAsync(requestUri, body, apiKey);
+                                if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
+                                { Console.WriteLine(taskPost.Result); }
+                                else
+                                { Console.WriteLine("Request Timed Out"); }
+                                break;
+                            }
                         }
                     case "del":
                         {
@@ -101,11 +112,34 @@ namespace DistSysACWClient
             responsestring = await response.Content.ReadAsStringAsync();
             return responsestring;
         }
+        static async Task<string> PostStringAsync(string path, string body, string apikey)
+        {
+            // Set ApiKey
+            client.DefaultRequestHeaders.Add("Apikey", apikey);
+            // Build JSON
+            string[] requestedUserDetails = body.Split(" ");
+            string jsonString = "{ \"username\": \"" + requestedUserDetails[0] + "\", \"role\": \"" + requestedUserDetails[1] + "\" }";
+            //string requestJson = "username: " + requestedUserDetails[0] + ", role: " + requestedUserDetails[1];
+            //var jsonString = JsonConvert.SerializeObject(requestJson);
+            var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            // Send Request
+            string responsestring = "";
+            HttpResponseMessage response = await client.PostAsync(path, stringContent);
+            responsestring = await response.Content.ReadAsStringAsync();
+
+            // Reset client apiKey for future requests.
+            client.DefaultRequestHeaders.Remove("Apikey");
+
+            return responsestring;
+        }
 
         static async Task<string> DeleteAsync(string path, string apiKey)
         {
             string responsestring = "";
+            // Set ApiKey
             client.DefaultRequestHeaders.Add("ApiKey", apiKey);
+            //Build JSON
+
             HttpResponseMessage response = await client.DeleteAsync(path);
             responsestring = await response.Content.ReadAsStringAsync();
 
@@ -123,7 +157,6 @@ namespace DistSysACWClient
                 return "False";
             }
         }
-
 
         static void HandleRequest(string[] request)
         {
@@ -184,6 +217,16 @@ namespace DistSysACWClient
                             }
                             break;
                         case "Role":
+                            if (clientUsername == null)
+                            {
+                                Console.WriteLine("You need to do a User Post or User Set first");
+                            }
+                            else
+                            {
+                                string requestUri = "user/changerole";
+                                string body = request[2] + " " + request[3];
+                                RunAsync(requestUri, body, clientApiKey, "post").Wait();
+                            }
                             break;
                     }
                     break;
