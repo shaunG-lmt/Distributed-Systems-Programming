@@ -13,6 +13,7 @@ namespace DistSysACW.Controllers
     {
         public ProtectedController(Models.UserContext context) : base(context) { }
 
+
         [Authorize(Roles = "Admin, User")]
         [ActionName("Hello")]
         [HttpGet]
@@ -50,6 +51,14 @@ namespace DistSysACW.Controllers
             {
                 return Ok(Hashing.SHA256(message));
             }
+        }
+
+        [Authorize(Roles = "Admin, User")]
+        [ActionName("GetPublicKey")]
+        [HttpGet]
+        public ActionResult SendPublicKey()
+        {
+            return Ok(Keys.Instance.GetPublic());
         }
     }
 }

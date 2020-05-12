@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DistSysACW.Models;
 
 namespace DistSysACW
 {
@@ -11,6 +12,7 @@ namespace DistSysACW
     {
         public Startup(IConfiguration configuration)
         {
+            Keys.Instance.SetKeys();
             Configuration = configuration;
         }
 
