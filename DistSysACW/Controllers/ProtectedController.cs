@@ -58,7 +58,17 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public ActionResult SendPublicKey()
         {
-            return Ok(Keys.Instance.GetPublic());
+            return Ok(Crypto.Instance.GetPublic());
         }
+
+        [Authorize(Roles = "Admin, User")]
+        [ActionName("Sign")]
+        [HttpGet]
+        public ActionResult Signed([FromQuery] string message)
+        {
+
+            return Ok();
+        }
+
     }
 }

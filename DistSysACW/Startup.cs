@@ -12,7 +12,6 @@ namespace DistSysACW
     {
         public Startup(IConfiguration configuration)
         {
-            Keys.Instance.SetKeys();
             Configuration = configuration;
         }
 

@@ -6,15 +6,22 @@ using System.Threading.Tasks;
 using CoreExtensions;
 namespace DistSysACW.Models
 {
-    public class Keys
+    public class Crypto
     {
         private string publicKey;
         private string privateKey;
-        private static Keys instance = null;
+        private static Crypto instance = null;
         private static readonly object padlock = new object();
-        private Keys() { }
+        private Crypto() 
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                publicKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, false);
+                privateKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, true);
+            }
+        }
 
-        public static Keys Instance
+        public static Crypto Instance
         {
             get 
             {
@@ -22,19 +29,13 @@ namespace DistSysACW.Models
                 {
                     if (instance == null)
                     {
-                        instance = new Keys();
+                        instance = new Crypto();
                     }
                     return instance;
                 }
             }
         }
 
-        public void SetKeys()
-        {
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            publicKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, false);
-            privateKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, true);
-        }
         public string GetPublic()
         {
             return publicKey;
