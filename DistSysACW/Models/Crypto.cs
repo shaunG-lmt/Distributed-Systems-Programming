@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using CoreExtensions;
 namespace DistSysACW.Models
 {
     public class Crypto
     {
+        private RSACryptoServiceProvider rsa;
         private string publicKey;
         private string privateKey;
         private static Crypto instance = null;
         private static readonly object padlock = new object();
         private Crypto() 
         {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                publicKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, false);
-                privateKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, true);
-            }
+            rsa = new RSACryptoServiceProvider();
+            publicKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, false);
+            privateKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, true);
         }
 
         public static Crypto Instance
@@ -35,7 +35,6 @@ namespace DistSysACW.Models
                 }
             }
         }
-
         public string GetPublic()
         {
             return publicKey;
@@ -43,6 +42,13 @@ namespace DistSysACW.Models
         public string GetPrivate()
         {
             return privateKey;
+        }
+        public string SignMessage(string message)
+        {
+            byte[] asciiByteMessage = Encoding.ASCII.GetBytes(message);
+            var signedData = rsa.SignData(asciiByteMessage, new SHA1CryptoServiceProvider());
+            var hexData = BitConverter.ToString(signedData);
+            return hexData;
         }
     }
 }

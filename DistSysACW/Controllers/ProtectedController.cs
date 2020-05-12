@@ -66,9 +66,7 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public ActionResult Signed([FromQuery] string message)
         {
-
-            return Ok();
+            return Ok(Crypto.Instance.SignMessage(message));
         }
-
     }
 }
