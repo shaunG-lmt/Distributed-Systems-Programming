@@ -19,6 +19,7 @@ namespace DistSysACWClient
         private static HttpClient client = new HttpClient();
         private static string clientUsername;
         private static string clientApiKey;
+        private static string serverPublicKey;
         static void Main()
         {
             // Setting the defaults for the client.
@@ -48,7 +49,6 @@ namespace DistSysACWClient
             {
                 switch (httpMethod)
                 {
-                    // Get request with no apikey.
                     case "get":
                         {
                             if (apiKey == null)
@@ -70,7 +70,6 @@ namespace DistSysACWClient
                                 break;
                             }
                         }
-                    // Post request with body and no apikey.
                     case "post":
                         {
                             if (apiKey == null)
@@ -97,6 +96,25 @@ namespace DistSysACWClient
                             Task<string> taskDel = DeleteAsync(requestUri, apiKey);
                             if (await Task.WhenAny(taskDel, Task.Delay(20000)) == taskDel)
                             { Console.WriteLine(taskDel.Result); }
+                            else
+                            { Console.WriteLine("Request Timed Out"); }
+                            break;
+                        }
+                    case "getKey":
+                        {
+                            Task<string> taskGet = GetStringAsync(requestUri, apiKey);
+                            if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
+                            {
+                                if (taskGet.Result.StartsWith("<"))
+                                {
+                                    serverPublicKey = taskGet.Result;
+                                    Console.WriteLine("Got Public Key");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Couldnt get the Public Key"); 
+                                }
+                            }
                             else
                             { Console.WriteLine("Request Timed Out"); }
                             break;
@@ -299,6 +317,19 @@ namespace DistSysACWClient
                                     {
                                         string requestUri = "protected/sha256?message=" + request[2];
                                         RunAsync(requestUri, null, clientApiKey, "get").Wait();
+                                    }
+                                    break;
+                                }
+                            case "Get":
+                                {
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "protected/getpublickey";
+                                        RunAsync(requestUri, null, clientApiKey, "getKey").Wait();
                                     }
                                     break;
                                 }
