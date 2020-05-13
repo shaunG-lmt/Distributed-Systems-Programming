@@ -9,7 +9,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
 namespace DistSysACWClient
 {
     #region Task 10 and beyond
@@ -19,7 +18,8 @@ namespace DistSysACWClient
         private static HttpClient client = new HttpClient();
         private static string clientUsername;
         private static string clientApiKey;
-        private static string serverPublicKey;
+        private static RSACryptoServiceProvider RSAVerify;
+        private static bool gotKey = false;
         static void Main()
         {
             // Setting the defaults for the client.
@@ -43,7 +43,7 @@ namespace DistSysACWClient
                 HandleRequest(userInput);
             }
         }
-        static async Task RunAsync(string requestUri, string body, string apiKey, string httpMethod)
+        static async Task RunAsync(string requestUri, string content, string apiKey, string httpMethod)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace DistSysACWClient
                         {
                             if (apiKey == null)
                             {
-                                Task<string> taskPost = PostStringAsync(requestUri, body);
+                                Task<string> taskPost = PostStringAsync(requestUri, content);
                                 if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
                                 { Console.WriteLine(taskPost.Result); }
                                 else
@@ -83,7 +83,7 @@ namespace DistSysACWClient
                             }
                             else
                             {
-                                Task<string> taskPost = PostStringAsync(requestUri, body, apiKey);
+                                Task<string> taskPost = PostStringAsync(requestUri, content, apiKey);
                                 if (await Task.WhenAny(taskPost, Task.Delay(20000)) == taskPost)
                                 { Console.WriteLine(taskPost.Result); }
                                 else
@@ -105,14 +105,59 @@ namespace DistSysACWClient
                             Task<string> taskGet = GetStringAsync(requestUri, apiKey);
                             if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
                             {
+
                                 if (taskGet.Result.StartsWith("<"))
                                 {
-                                    serverPublicKey = taskGet.Result;
-                                    Console.WriteLine("Got Public Key");
+                                    try
+                                    {
+                                        RSAVerify = new RSACryptoServiceProvider();
+                                        CoreExtensions.RSACryptoExtensions.FromXmlStringCore22(RSAVerify, taskGet.Result);
+                                        Console.WriteLine("Got Public Key");
+                                        gotKey = true;
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e);
+                                        Console.WriteLine("Couldnt get the Public Key");
+                                    }
+                                    
                                 }
                                 else
                                 {
                                     Console.WriteLine("Couldnt get the Public Key"); 
+                                }
+                            }
+                            else
+                            { Console.WriteLine("Request Timed Out"); }
+                            break;
+                        }
+                    case "getSign":
+                        {
+                            Task<string> taskGet = GetStringAsync(requestUri, apiKey);
+                            if (await Task.WhenAny(taskGet, Task.Delay(20000)) == taskGet)
+                            {
+                                // Sent data to verify by.
+                                byte[] data = Encoding.ASCII.GetBytes(content);
+
+                                // Received signed data
+                                string x = taskGet.Result.Replace("-", "");
+                                byte[] StringToByteArray(String hex)
+                                {
+                                    int NumberChars = hex.Length;
+                                    byte[] bytes = new byte[NumberChars / 2];
+                                    for (int i = 0; i < NumberChars; i += 2)
+                                        bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+                                    return bytes;
+                                }
+                                byte[] signature = StringToByteArray(x);
+
+                                if (RSAVerify.VerifyData(data, "SHA1", signature))
+                                {
+                                    Console.WriteLine("Message was successfully signed");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Message was not successfully signed");
                                 }
                             }
                             else
@@ -147,24 +192,22 @@ namespace DistSysACWClient
 
             return responsestring;
         }
-        static async Task<string> PostStringAsync(string path, string body)
+        static async Task<string> PostStringAsync(string path, string content)
         {
-            var jsonString = JsonConvert.SerializeObject(body);
+            var jsonString = JsonConvert.SerializeObject(content);
             var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json"); 
             string responsestring = "";
             HttpResponseMessage response = await client.PostAsync(path, stringContent);
             responsestring = await response.Content.ReadAsStringAsync();
             return responsestring;
         }
-        static async Task<string> PostStringAsync(string path, string body, string apikey)
+        static async Task<string> PostStringAsync(string path, string content, string apikey)
         {
             // Set ApiKey
             client.DefaultRequestHeaders.Add("Apikey", apikey);
             // Build JSON
-            string[] requestedUserDetails = body.Split(" ");
+            string[] requestedUserDetails = content.Split(" ");
             string jsonString = "{ \"username\": \"" + requestedUserDetails[0] + "\", \"role\": \"" + requestedUserDetails[1] + "\" }";
-            //string requestJson = "username: " + requestedUserDetails[0] + ", role: " + requestedUserDetails[1];
-            //var jsonString = JsonConvert.SerializeObject(requestJson);
             var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
             // Send Request
             string responsestring = "";
@@ -269,8 +312,8 @@ namespace DistSysACWClient
                                     else
                                     {
                                         string requestUri = "user/changerole";
-                                        string body = request[2] + " " + request[3];
-                                        RunAsync(requestUri, body, clientApiKey, "post").Wait();
+                                        string content = request[2] + " " + request[3];
+                                        RunAsync(requestUri, content, clientApiKey, "post").Wait();
                                     }
                                     break;
                                 }
@@ -330,6 +373,23 @@ namespace DistSysACWClient
                                     {
                                         string requestUri = "protected/getpublickey";
                                         RunAsync(requestUri, null, clientApiKey, "getKey").Wait();
+                                    }
+                                    break;
+                                }
+                            case "Sign":
+                                {
+                                    if (clientUsername == null)
+                                    {
+                                        Console.WriteLine("You need to do a User Post or User Set first");
+                                    }
+                                    else if (gotKey == false) 
+                                    {
+                                        Console.WriteLine("Client doesn't yet have the public key");
+                                    }
+                                    else
+                                    {
+                                        string requestUri = "protected/sign?message=" + request[2];
+                                        RunAsync(requestUri, request[2], clientApiKey, "getSign").Wait();
                                     }
                                     break;
                                 }

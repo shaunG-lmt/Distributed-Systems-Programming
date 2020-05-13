@@ -46,8 +46,8 @@ namespace DistSysACW.Models
         public string SignMessage(string message)
         {
             byte[] asciiByteMessage = Encoding.ASCII.GetBytes(message);
-            var signedData = rsa.SignData(asciiByteMessage, new SHA1CryptoServiceProvider());
-            var hexData = BitConverter.ToString(signedData);
+            byte[] signedData = rsa.SignData(asciiByteMessage, new SHA1CryptoServiceProvider());
+            string hexData = BitConverter.ToString(signedData);
             return hexData;
         }
     }
