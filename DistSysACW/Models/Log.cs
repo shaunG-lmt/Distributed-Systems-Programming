@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DistSysACW.Models
 {
-    public class Logs
+    public class Log
     {
-        public Logs() { }
+        public Log() { }
 
         [Key]
         public int LogId { get; set; }
