@@ -19,18 +19,18 @@ namespace DistSysACW.Migrations
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DistSysACW.Models.User", b =>
-                {
-                    b.Property<string>("ApiKey")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<string>("ApiKey")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Role");
+                b.Property<string>("Role");
 
-                    b.Property<string>("UserName");
+                b.Property<string>("UserName");
 
-                    b.HasKey("ApiKey");
+                b.HasKey("ApiKey");
 
-                    b.ToTable("Users");
-                });
+                b.ToTable("Users");
+            });
 #pragma warning restore 612, 618
         }
     }
