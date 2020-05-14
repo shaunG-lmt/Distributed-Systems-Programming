@@ -11,6 +11,7 @@ namespace DistSysACW.Models
         public Logs_Archive() { }
 
         [Key]
+        public int LogID { get; set; }
         public string LogApiKey { get; set; }
         public string LogString { get; set; }
         public DateTime LogDateTime { get; set; }

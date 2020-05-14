@@ -14,11 +14,12 @@ namespace DistSysACW.Models
         }
 
         public DbSet<User> Users { get; set; }
-
-        //TODO: Task13
+        public DbSet<Log> Logs { get; set; }
+        public DbSet<Logs_Archive> Logs_Archives { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseLazyLoadingProxies();
             optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=DistSysACW;");
         }
     }

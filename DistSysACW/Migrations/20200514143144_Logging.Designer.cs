@@ -4,14 +4,16 @@ using DistSysACW.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DistSysACW.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20200514143144_Logging")]
+    partial class Logging
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,17 +42,14 @@ namespace DistSysACW.Migrations
 
             modelBuilder.Entity("DistSysACW.Models.Logs_Archive", b =>
                 {
-                    b.Property<int>("LogID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("LogApiKey");
+                    b.Property<string>("LogApiKey")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("LogDateTime");
 
                     b.Property<string>("LogString");
 
-                    b.HasKey("LogID");
+                    b.HasKey("LogApiKey");
 
                     b.ToTable("Logs_Archives");
                 });
