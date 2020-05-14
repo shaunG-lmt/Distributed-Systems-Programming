@@ -15,7 +15,7 @@ namespace DistSysACW.Models
 
         public DbSet<User> Users { get; set; }
         public DbSet<Log> Logs { get; set; }
-        DbSet<Log_Archive> Log_Archive { get; set; }
+        public DbSet<Log_Archive> Log_Archive { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseLazyLoadingProxies();
