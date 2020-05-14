@@ -19,7 +19,6 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-
             User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
             return Ok("Hello "+ foundUser.UserName);
         }
