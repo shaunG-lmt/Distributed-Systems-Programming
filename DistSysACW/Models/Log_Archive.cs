@@ -9,7 +9,9 @@ namespace DistSysACW.Models
     public class Log_Archive
     {
         public Log_Archive() { }
-
-        public Log log { get; set; }
+        [Key]
+        public int LogArchiveID { get; set; }
+        public string LogString { get; set; }
+        public DateTime LogDateTime { get; set; }
     }
 }

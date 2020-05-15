@@ -23,6 +23,24 @@ namespace DistSysACW.Models
 
     public static class UserDatabaseAccess
     {
+        public static void AddLog(string request, string apikey)
+        {
+            using (var dba = new UserContext())
+            {
+                User foundUser = dba.Users.Find(apikey);
+                foundUser.Logs.Add(new Log
+                {
+                    LogDateTime = DateTime.Now,
+                    LogString = request
+                });
+                dba.Log_Archive.Add(new Log_Archive
+                {
+                    LogDateTime = DateTime.Now,
+                    LogString = request
+                });
+                dba.SaveChanges();
+            }
+        }
         #region Task3 
         // TODO: Make methods which allow us to read from/write to the database 
         #endregion
