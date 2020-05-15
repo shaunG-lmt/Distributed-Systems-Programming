@@ -63,15 +63,20 @@ namespace DistSysACW.Controllers
         }
 
         [Authorize(Roles = "Admin, User")]
-        [ActionName("Removeuser")]
+        [ActionName("RemoveUser")]
         [HttpDelete]
         public IActionResult Delete([FromQuery] string username)
         {
-            // Tried to do this through using identity set up in authmiddleware.cs, couldnt access claims and there was an empty identity in there as well.
-            string apikey = this.Request.Headers["ApiKey"];
-            if (UserDatabaseAccess.CheckUserApiKey(apikey))
+            // Get User from ApiKey of request.
+            User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log. 
+            string request = foundUser.UserName + " requested /User/RemoveUser/" + username;
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+            
+            if (UserDatabaseAccess.CheckUserApiKey(this.Request.Headers["ApiKey"])) // Tried to get apikey using identity set up in authmiddleware.cs, couldnt access claims and there was an empty identity in there as well.
             {
-                User user = UserDatabaseAccess.ReturnUserFromApiKey(apikey);
+                User user = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
                 if(user.UserName == username)
                 {
                     UserDatabaseAccess.RemoveUser(user);
@@ -82,10 +87,17 @@ namespace DistSysACW.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [ActionName("Changerole")]
+        [ActionName("ChangeRole")]
         [HttpPost]
         public IActionResult PostChangeRole([FromBody] JSONContract JSONBodyResult)
         {
+            // Get User from ApiKey of request.
+            User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log. 
+            string request = foundUser.UserName + " requested /User/RemoveRole/ with a body of: " + JSONBodyResult;
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+
             string result = UserDatabaseAccess.ChangeRole(JSONBodyResult);
             if (result.StartsWith("NOT"))
             {
