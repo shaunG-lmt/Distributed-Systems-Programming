@@ -31,7 +31,8 @@ namespace DistSysACW.Models
                 foundUser.Logs.Add(new Log
                 {
                     LogDateTime = DateTime.Now,
-                    LogString = request
+                    LogString = request,
+                    ApiKey = apikey
                 });
                 dba.Log_Archive.Add(new Log_Archive
                 {
@@ -145,6 +146,9 @@ namespace DistSysACW.Models
         {
             using (var dba = new UserContext())
             {
+                // Delete logs assocation with user.
+                dba.Logs.RemoveRange(dba.Logs.Where(Log => Log.ApiKey == user.ApiKey));
+                
                 dba.Remove(user);
                 dba.SaveChanges();
                 return true;
