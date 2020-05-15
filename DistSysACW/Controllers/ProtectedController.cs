@@ -19,7 +19,14 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+            // Get User from ApiKey of request.
             User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log.
+            string request = foundUser.UserName + " requested /Protected/Hello";
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+
+            // Return status code and user's username.
             return Ok("Hello "+ foundUser.UserName);
         }
 
@@ -28,6 +35,14 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public ActionResult Sha1([FromQuery] string message)
         {
+            // Get User from ApiKey of request.
+            User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log. 
+            string request = foundUser.UserName + " requested /Protected/SHA1/" + message;
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+
+            // Message handling.
             if (message == null)
             {
                 return BadRequest("Bad Request");
@@ -43,6 +58,14 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public ActionResult Sha256([FromQuery] string message)
         {
+            // Get User from ApiKey of request.
+            User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log. 
+            string request = foundUser.UserName + " requested /Protected/SHA256/" + message;
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+
+            // Message handling.
             if (message == null)
             {
                 return BadRequest("Bad Request");
@@ -58,6 +81,14 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public ActionResult SendPublicKey()
         {
+            // Get User from ApiKey of request.
+            User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log. 
+            string request = foundUser.UserName + " requested /Protected/GetPublicKey";
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+
+            // Return status code with server public key
             return Ok(Crypto.Instance.GetPublic());
         }
 
@@ -66,6 +97,14 @@ namespace DistSysACW.Controllers
         [HttpGet]
         public ActionResult Signed([FromQuery] string message)
         {
+            // Get User from ApiKey of request.
+            User foundUser = UserDatabaseAccess.ReturnUserFromApiKey(this.Request.Headers["ApiKey"]);
+
+            // Add Log. 
+            string request = foundUser.UserName + " requested /Protected/Sign/" + message;
+            UserDatabaseAccess.AddLog(request, this.Request.Headers["ApiKey"]);
+
+            // Return signed message
             return Ok(Crypto.Instance.SignMessage(message));
         }
     }
