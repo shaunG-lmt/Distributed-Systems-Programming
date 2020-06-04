@@ -219,7 +219,6 @@ namespace DistSysACWClient
 
             return responsestring;
         }
-
         static async Task<string> DeleteAsync(string path, string apiKey)
         {
             string responsestring = "";
@@ -251,9 +250,17 @@ namespace DistSysACWClient
             {
                 case "TalkBack":
                     { 
+                        
                         if (request[1] == "Hello")
                         {
-                            RunAsync("talkback/hello", null, null, "get").Wait();
+                            if (request.Length > 2)
+                            {
+                                Console.WriteLine("Invalid TalkBack Hello request...");
+                            }
+                            else
+                            {
+                                RunAsync("talkback/hello", null, null, "get").Wait();
+                            }
                         }
                         else if (request[1] == "Sort")
                         {
