@@ -319,8 +319,16 @@ namespace DistSysACWClient
                                     else
                                     {
                                         string requestUri = "user/changerole";
-                                        string content = request[2] + " " + request[3];
-                                        RunAsync(requestUri, content, clientApiKey, "post").Wait();
+                                        try
+                                        {
+                                            string content = request[2] + " " + request[3];
+                                            RunAsync(requestUri, content, clientApiKey, "post").Wait();
+                                        }
+                                        catch
+                                        {
+                                            Console.WriteLine("Invalid format... Please try again.");
+                                            Main();
+                                        }
                                     }
                                     break;
                                 }
