@@ -12,32 +12,18 @@ namespace DistSysACW.Controllers
 {
     public class TalkBackController : BaseController
     {
-        /// <summary>
-        /// Constructs a TalkBack controller, taking the UserContext through dependency injection
-        /// </summary>
-        /// <param name="context">DbContext set as a service in Startup.cs and dependency injected</param>
         public TalkBackController(Models.UserContext context) : base(context) { }
-
 
         [ActionName("Hello")]
         public ActionResult Get()
         {
-            #region TASK1
-            // TODO: add api/talkback/hello response
-            #endregion
-
+            // Response.
             return Ok("Hello World");
         }
 
         [ActionName("Sort")]
         public IActionResult Get([FromQuery]string[] integers)
         {
-            #region TASK1
-            // TODO: 
-            // sort the integers into ascending order
-            // send the integers back as the api/talkback/sort response
-            #endregion
-            
             try
             {
                 int[] validchars = new int[integers.Length];
@@ -50,14 +36,15 @@ namespace DistSysACW.Controllers
                 
                 // Sort valid
                 Array.Sort(validchars);
+                // Valid - Response.
                 return Ok(validchars);
             }
-            // Invalid chars
+            // Invalid - Response.
             catch (FormatException)
             {
                 return BadRequest("Bad Request");
             }
-            // Empty
+            // Empty - Response.
             catch (ArgumentNullException)
             {
                 return Ok("[]");

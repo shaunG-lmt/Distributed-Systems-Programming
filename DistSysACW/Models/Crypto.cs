@@ -21,6 +21,7 @@ namespace DistSysACW.Models
             privateKey = CoreExtensions.RSACryptoExtensions.ToXmlStringCore22(rsa, true);
         }
 
+        // Thread safe approach for Singleton.
         public static Crypto Instance
         {
             get 

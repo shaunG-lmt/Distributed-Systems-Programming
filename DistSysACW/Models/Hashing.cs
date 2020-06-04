@@ -18,7 +18,6 @@ namespace DistSysACW.Models
                 return ByteArrayToHexString(sha1ByteMessage);
             }
         }
-
         public static string SHA256(string Message)
         {
             byte[] asciiByteMessage = System.Text.Encoding.ASCII.GetBytes(Message);
@@ -29,7 +28,6 @@ namespace DistSysACW.Models
                 return ByteArrayToHexString(sha256ByteMessage);
             }
         }
-        // Converts bytes into hexadecimal digits
         static string ByteArrayToHexString(byte[] byteArray)
         {
             string hexString = "";

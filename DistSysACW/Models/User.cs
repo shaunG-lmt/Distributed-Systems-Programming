@@ -17,10 +17,6 @@ namespace DistSysACW.Models
         virtual public ICollection<Log> Logs { get; set; }
     }
 
-    #region Task13?
-    // TODO: You may find it useful to add code here for Logging
-    #endregion
-
     public static class UserDatabaseAccess
     {
         public static void AddLog(string request, string apikey)

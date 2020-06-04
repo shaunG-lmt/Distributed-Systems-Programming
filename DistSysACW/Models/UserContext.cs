@@ -9,10 +9,7 @@ namespace DistSysACW.Models
     public class UserContext : DbContext
     {
         public UserContext() : base()
-        {
-
-        }
-
+        { }
         public DbSet<User> Users { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<Log_Archive> Log_Archive { get; set; }
