@@ -416,7 +416,7 @@ namespace DistSysACWClient
                     break;
 
                 default:
-                    // Invalid, handle.
+                    Console.WriteLine("Invalid Request...");
                     break;
             }
         }
